@@ -1,7 +1,7 @@
 {
-  "name": "tictactoe-electron",
+  "name": "snake-electron",
   "version": "1.0.0",
-  "description": "A simple tic tac toe game using Electron",
+  "description": "A simple snake game using Electron",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
