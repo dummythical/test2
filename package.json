@@ -1,7 +1,7 @@
 {
-  "name": "snake-electron",
+  "name": "https-message-app",
   "version": "1.0.0",
-  "description": "A simple snake game using Electron",
+  "description": "Fetch a JSON message over HTTPS from a local server",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
