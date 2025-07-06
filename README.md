@@ -10,7 +10,10 @@ The server is expected to respond with:
 
 ## Prerequisites
 
+Copy your mkcert root certificate to `rootCA.pem` in this directory so the app can verify the HTTPS connection.
+=======
 Ensure your mkcert root certificate is trusted by Node.js. You can do this by setting the `NODE_EXTRA_CA_CERTS` environment variable to the path of your mkcert root certificate (for example `rootCA.pem`).
+
 
 ## Running
 

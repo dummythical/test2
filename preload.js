@@ -8,6 +8,7 @@ const agent = new https.Agent({
 });
 
 async function getMessage() {
+  //const res = await fetch('https://192.168.1.21', { dispatcher: agent });
   const res = await fetch('https://192.168.1.21', { agent });
   if (!res.ok) {
     throw new Error(`Request failed with status ${res.status}`);
