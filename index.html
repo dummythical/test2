@@ -2,64 +2,112 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Tic Tac Toe Gwapo</title>
+  <title>Snake Game</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; }
-    #board { display: grid; grid-template-columns: repeat(3, 100px); grid-gap: 5px; margin: 20px auto; width: 310px; }
-    .cell { width: 100px; height: 100px; font-size: 64px; display: flex; justify-content: center; align-items: center; border: 1px solid #333; cursor: pointer; }
-    #status { margin-top: 20px; font-size: 20px; }
+    canvas { background: #000; display: block; margin: 20px auto; }
+    #score { color: #333; font-size: 18px; }
   </style>
 </head>
 <body>
-  <h1>Tic Tac Toe</h1>
-  <div id="board"></div>
-  <div id="status"></div>
-
+  <h1>Snake Game</h1>
+  <canvas id="game" width="400" height="400"></canvas>
+  <div id="score">Score: 0</div>
   <script>
-    const boardElement = document.getElementById('board');
-    const statusElement = document.getElementById('status');
-    let board = Array(9).fill(null);
-    let xTurn = true;
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const grid = 20;
+    const tileCount = canvas.width / grid;
+    let score = 0;
 
-    function checkWinner() {
-      const wins = [
-        [0,1,2], [3,4,5], [6,7,8],
-        [0,3,6], [1,4,7], [2,5,8],
-        [0,4,8], [2,4,6]
-      ];
-      for (const [a,b,c] of wins) {
-        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-          return board[a];
+    const snake = {
+      x: 160,
+      y: 160,
+      dx: grid,
+      dy: 0,
+      cells: [],
+      maxCells: 4
+    };
+
+    const apple = {
+      x: 320,
+      y: 320
+    };
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    function reset() {
+      snake.x = 160;
+      snake.y = 160;
+      snake.cells = [];
+      snake.maxCells = 4;
+      snake.dx = grid;
+      snake.dy = 0;
+      apple.x = getRandomInt(0, tileCount) * grid;
+      apple.y = getRandomInt(0, tileCount) * grid;
+      score = 0;
+      document.getElementById('score').textContent = 'Score: ' + score;
+    }
+
+    let count = 0;
+    function loop() {
+      requestAnimationFrame(loop);
+      if (++count < 4) return;
+      count = 0;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      snake.x += snake.dx;
+      snake.y += snake.dy;
+
+      if (snake.x < 0) snake.x = canvas.width - grid;
+      else if (snake.x >= canvas.width) snake.x = 0;
+      if (snake.y < 0) snake.y = canvas.height - grid;
+      else if (snake.y >= canvas.height) snake.y = 0;
+
+      snake.cells.unshift({x: snake.x, y: snake.y});
+      if (snake.cells.length > snake.maxCells) snake.cells.pop();
+
+      ctx.fillStyle = 'red';
+      ctx.fillRect(apple.x, apple.y, grid-1, grid-1);
+
+      ctx.fillStyle = 'lime';
+      snake.cells.forEach((cell, index) => {
+        ctx.fillRect(cell.x, cell.y, grid-1, grid-1);
+        if (cell.x === apple.x && cell.y === apple.y) {
+          snake.maxCells++;
+          score++;
+          document.getElementById('score').textContent = 'Score: ' + score;
+          apple.x = getRandomInt(0, tileCount) * grid;
+          apple.y = getRandomInt(0, tileCount) * grid;
         }
-      }
-      return board.includes(null) ? null : 'Draw';
-    }
-
-    function handleClick(idx) {
-      if (board[idx] || checkWinner()) return;
-      board[idx] = xTurn ? 'X' : 'O';
-      xTurn = !xTurn;
-      render();
-    }
-
-    function render() {
-      boardElement.innerHTML = '';
-      board.forEach((val, idx) => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.textContent = val ? val : '';
-        cell.addEventListener('click', () => handleClick(idx));
-        boardElement.appendChild(cell);
+        for (let i = index + 1; i < snake.cells.length; i++) {
+          if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+            reset();
+          }
+        }
       });
-      const winner = checkWinner();
-      if (winner) {
-        statusElement.textContent = winner === 'Draw' ? "It's a draw!" : `${winner} wins!`;
-      } else {
-        statusElement.textContent = `${xTurn ? 'X' : 'O'}'s turn`;
-      }
     }
 
-    render();
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft' && snake.dx === 0) {
+        snake.dx = -grid;
+        snake.dy = 0;
+      } else if (e.key === 'ArrowUp' && snake.dy === 0) {
+        snake.dy = -grid;
+        snake.dx = 0;
+      } else if (e.key === 'ArrowRight' && snake.dx === 0) {
+        snake.dx = grid;
+        snake.dy = 0;
+      } else if (e.key === 'ArrowDown' && snake.dy === 0) {
+        snake.dy = grid;
+        snake.dx = 0;
+      }
+    });
+
+    reset();
+    requestAnimationFrame(loop);
   </script>
 </body>
 </html>
